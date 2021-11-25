@@ -7,6 +7,7 @@ RED = 0
 GREEN = 1 
 BLUE = 2
 
+
 st.write('## Brincando com imagens')
 
 st.sidebar.write('### Configurações')
@@ -16,6 +17,7 @@ uploaded_file = st.sidebar.file_uploader("Escolha uma imagem",
 )
 
 # is_black_and_white = st.sidebar.checkbox('Preto e branco?')
+
 
 if uploaded_file is not None:
     image_source = Image.open(uploaded_file)
@@ -28,7 +30,7 @@ if uploaded_file is not None:
     with col1:
         # image_gray = np.copy(image)        
         # image_gray = np.mean(image_gray, axis=2) / 255    
-        st.write('### Imagem original')
+        st.write('## Imagem Original')
 
         st.image(image)
         # st.write('### Média')
@@ -40,7 +42,7 @@ if uploaded_file is not None:
         image_gray_corr = np.array(image_gray_corr * pesos, dtype=np.uint8)
         image_gray_corr = np.array(np.sum(image_gray_corr, axis=2), dtype=np.uint8)
 
-        st.write('### tons de cinza')
+        st.write('## Tons de Cinza')
         # st.latex(r'''
         #     Y_{linear} = 0.2126R_{linear} 
         #         + 0.7152G_{linear}
@@ -120,29 +122,28 @@ if uploaded_file is not None:
     #         image = Image.fromarray(image).convert('L')
 
     # image_aux
-    # option = st.sidebar.selectbox(
-    #     'Qual o nível de cores?',
-    #     (2, 4, 8, 16, 32, 64, 128, 192, 256),
-    # )
+    option = st.sidebar.selectbox(
+        'Qual o nível de cores?',
+        (2, 4, 8, 16, 32, 64, 128, 192, 256),
+    )
 
-    # image_aux = np.copy(image_gray_corr)
-    # if option == 2:
-    #     image_aux[image_aux > 127] = 255
-    #     image_aux[image_aux < 127] = 0
-    # elif option == 4:
-    #     image_aux[image_aux > 191] = 192
-    #     image_aux[(image_aux > 127) & (image_aux < 192)] = 128
-    #     image_aux[(image_aux > 63) & (image_aux < 128)] = 64
-    #     image_aux[image_aux < 64] = 0
-    # elif option == 8:
-    #     image_aux[image_aux > 223] = 255
-    #     image_aux[(image_aux > 191) & (image_aux < 224)] = 192
-    #     image_aux[(image_aux > 159) & (image_aux < 192)] = 160
-    #     image_aux[(image_aux > 127) & (image_aux < 160)] = 128
-    #     image_aux[(image_aux > 95) & (image_aux < 128)] = 96
-    #     image_aux[(image_aux > 63) & (image_aux < 96)] = 64
-    #     image_aux[(image_aux > 31) & (image_aux < 64)] = 32
-    #     image_aux[image_aux < 32] = 0
+    image_aux = np.copy(image_gray_corr)
 
-    # st.image(image_aux)    
+    st.write(f'## Imagem com {option} cores'.upper())
     
+    def num_cores(q_cor, imag_aux):
+        div_cores = (256 / q_cor)
+        print(div_cores)
+        print(f'color: {q_cor}')
+        for i in range(q_cor):
+            if i == 0:
+                imag_aux[imag_aux <= div_cores] = 0
+            elif i == q_cor - 1:
+                imag_aux[imag_aux >= (div_cores * i)] = 255
+            else:
+                imag_aux[(imag_aux > ((i * div_cores) - 1)) & 
+                        (imag_aux < ((i + 1) * div_cores))] = div_cores * i
+
+    num_cores(option, image_aux)
+
+    st.image(image_aux)
